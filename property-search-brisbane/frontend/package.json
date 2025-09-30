@@ -1,0 +1,12 @@
+{
+  "name": "property-search-brisbane-frontend",
+  "version": "1.0.0",
+  "description": "Frontend assets for the Property Search Brisbane application.",
+  "scripts": {
+    "start": "parcel index.html --port 1234",
+    "build": "parcel build index.html"
+  },
+  "devDependencies": {
+    "parcel": "^2.9.3"
+  }
+}
