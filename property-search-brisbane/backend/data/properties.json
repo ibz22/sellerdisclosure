@@ -1,0 +1,42 @@
+[
+  {
+    "id": "prop_001",
+    "address": "123 Boundary St, West End",
+    "suburb": "West End",
+    "price": 850000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "parking": 1,
+    "description": "Stylish inner-city apartment with river views."
+  },
+  {
+    "id": "prop_002",
+    "address": "45 James St, Fortitude Valley",
+    "suburb": "Fortitude Valley",
+    "price": 1200000,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "parking": 2,
+    "description": "Contemporary family home close to cafes and boutiques."
+  },
+  {
+    "id": "prop_003",
+    "address": "78 Latrobe Tce, Paddington",
+    "suburb": "Paddington",
+    "price": 720000,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "parking": 1,
+    "description": "Character cottage with city views and leafy surrounds."
+  },
+  {
+    "id": "prop_004",
+    "address": "9 Grey St, South Brisbane",
+    "suburb": "South Brisbane",
+    "price": 950000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "parking": 1,
+    "description": "Spacious riverside apartment steps from cultural precinct."
+  }
+]
