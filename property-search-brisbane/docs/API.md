@@ -41,6 +41,7 @@ Fetch a paginated list of properties filtered by query parameters.
 
 | Name     | Type   | Description                                      |
 |----------|--------|--------------------------------------------------|
+| address  | string | Optional full street address to geocode prior to parcel lookup |
 | suburb   | string | Optional suburb name to filter listings          |
 | minPrice | number | Optional lower bound for price filter            |
 | maxPrice | number | Optional upper bound for price filter            |
@@ -68,9 +69,18 @@ Status: 200 OK
     "page": 1,
     "pageSize": 20,
     "total": 1
+  },
+  "locationContext": {
+    "searchOrigin": {
+      "latitude": -27.4705,
+      "longitude": 153.026
+    },
+    "radiusMeters": 100
   }
 }
 ```
+
+When `address` is provided, the server geocodes the value using the Queensland Government Geocoding API. The resulting latitude and longitude are surfaced under `locationContext.searchOrigin` to describe the parcel query that was executed.
 
 ### GET /properties/{id}
 

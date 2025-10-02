@@ -13,10 +13,15 @@ This package implements the backend API for the Property Search Brisbane applica
    ```bash
    npm install
    ```
-2. Copy `.env.example` to `.env` and fill in the required values:
+2. Create a `.env` file with the required configuration values:
    ```bash
-   cp .env.example .env
+   cat <<'ENV' > .env
+   PORT=3000
+   GEOCODING_API_URL=https://api.qld.gov.au/example/geocoder
+   GEOCODING_API_KEY=your-api-key
+   ENV
    ```
+   Replace the example values with the real Queensland Government Geocoding API endpoint and key for your environment.
 3. Run the development server:
    ```bash
    npm run dev
@@ -32,7 +37,15 @@ The service exposes a `/health` endpoint for simple uptime checks.
 
 - `server.js` – Express entry point
 - `package.json` – project metadata and scripts
-- `.env.example` – template for environment configuration
+- `.env` – environment configuration (see below)
+
+## Configuration
+
+The backend relies on the Queensland Government Geocoding API to resolve addresses. Set the following environment variables either in `.env` or through your hosting provider:
+
+- `GEOCODING_API_URL` – Base URL for the Queensland Government Geocoding API endpoint.
+- `GEOCODING_API_KEY` – API key provisioned for your Queensland Government account.
+- `PORT` – Optional. Port for the Express server (defaults to `3000`).
 
 ## Scripts
 
