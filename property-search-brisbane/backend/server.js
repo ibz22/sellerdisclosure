@@ -6,6 +6,12 @@ const {
   PropertyNotFoundError,
   PAGE_SIZE,
 } = require('./services/propertyService');
+const {
+  geocodeAddress,
+  GeocodingError,
+  GeocodingNotFoundError,
+  GeocodingConfigurationError,
+} = require('./services/geocodingService');
 
 const app = express();
 
@@ -39,9 +45,9 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.get('/properties', (req, res, next) => {
+app.get('/properties', async (req, res, next) => {
   try {
-    const { suburb, minPrice, maxPrice, page } = req.query;
+    const { suburb, minPrice, maxPrice, page, address } = req.query;
     const filters = {};
 
     if (suburb !== undefined) {
@@ -54,6 +60,17 @@ app.get('/properties', (req, res, next) => {
         );
       }
       filters.suburb = suburb.trim();
+    }
+
+    if (address !== undefined) {
+      if (typeof address !== 'string' || !address.trim()) {
+        return respondWithError(
+          res,
+          400,
+          ERROR_CODES.INVALID_REQUEST,
+          'address must be a non-empty string when provided.'
+        );
+      }
     }
 
     if (minPrice !== undefined) {
@@ -110,12 +127,46 @@ app.get('/properties', (req, res, next) => {
       filters.page = 1;
     }
 
-    const { results, pagination } = searchProperties({
+    let coordinates;
+    if (address !== undefined) {
+      try {
+        coordinates = await geocodeAddress(address.trim());
+      } catch (error) {
+        if (error instanceof GeocodingNotFoundError) {
+          return respondWithError(
+            res,
+            400,
+            ERROR_CODES.INVALID_REQUEST,
+            'No geocoding results were found for the supplied address.'
+          );
+        }
+        if (error instanceof GeocodingConfigurationError) {
+          return respondWithError(
+            res,
+            500,
+            ERROR_CODES.INTERNAL,
+            error.message
+          );
+        }
+        if (error instanceof GeocodingError) {
+          return respondWithError(
+            res,
+            400,
+            ERROR_CODES.INVALID_REQUEST,
+            error.message
+          );
+        }
+        throw error;
+      }
+    }
+
+    const { results, pagination, locationContext } = searchProperties({
       suburb: filters.suburb,
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
       page: filters.page,
       pageSize: PAGE_SIZE,
+      coordinates,
     });
 
     const data = results.map((property) => ({
@@ -127,10 +178,16 @@ app.get('/properties', (req, res, next) => {
       parking: property.parking,
     }));
 
-    return res.json({
+    const responseBody = {
       data,
       pagination,
-    });
+    };
+
+    if (locationContext) {
+      responseBody.locationContext = locationContext;
+    }
+
+    return res.json(responseBody);
   } catch (error) {
     if (error.message && error.message.includes('must be a valid number')) {
       return respondWithError(

@@ -8,12 +8,27 @@ class PropertyNotFoundError extends Error {
 }
 
 const PAGE_SIZE = 20;
+const DEFAULT_LOCATION_RADIUS_METERS = 100;
 
 function normaliseSuburb(suburb) {
   return suburb.trim().toLowerCase();
 }
 
-function searchProperties({ suburb, minPrice, maxPrice, page = 1, pageSize = PAGE_SIZE }) {
+function buildLocationContext(coordinates) {
+  if (!coordinates || typeof coordinates.latitude !== 'number' || typeof coordinates.longitude !== 'number') {
+    return null;
+  }
+
+  return {
+    searchOrigin: {
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+    },
+    radiusMeters: DEFAULT_LOCATION_RADIUS_METERS,
+  };
+}
+
+function searchProperties({ suburb, minPrice, maxPrice, coordinates, page = 1, pageSize = PAGE_SIZE }) {
   let filtered = properties;
 
   if (suburb) {
@@ -35,6 +50,8 @@ function searchProperties({ suburb, minPrice, maxPrice, page = 1, pageSize = PAG
   const end = start + size;
   const results = filtered.slice(start, end);
 
+  const locationContext = buildLocationContext(coordinates);
+
   return {
     results,
     pagination: {
@@ -42,6 +59,7 @@ function searchProperties({ suburb, minPrice, maxPrice, page = 1, pageSize = PAG
       pageSize: size,
       total,
     },
+    locationContext,
   };
 }
 
@@ -60,4 +78,6 @@ module.exports = {
   getPropertyById,
   PropertyNotFoundError,
   PAGE_SIZE,
+  DEFAULT_LOCATION_RADIUS_METERS,
+  buildLocationContext,
 };
